@@ -19,6 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.DatabaseMetaData;
 
 import javax.sql.DataSource;
@@ -68,7 +69,12 @@ public class DatabaseTypeTestUtils {
 
 	public static DataSource getMockDataSource(Exception e) throws Exception {
 		DataSource ds = mock(DataSource.class);
-		when(ds.getConnection()).thenReturn(null);
+		// DataSource.getConnection() declares only SQLException, and
+		// MetaDataAccessException is checked, so Mockito rejects stubbing it
+		// directly; DataSourceUtils turns SQLException into
+		// CannotGetJdbcConnectionException which extractDatabaseMetaData
+		// reports as MetaDataAccessException
+		when(ds.getConnection()).thenThrow(new SQLException("Connection failure", e));
 		return ds;
 	}
 

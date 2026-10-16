@@ -9,7 +9,7 @@ buildscript {
 	}
 	dependencies {
 		classpath 'io.spring.gradle:docbook-reference-plugin:0.3.1'
-		classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+		classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
 	}
 }
 
@@ -84,8 +84,7 @@ allprojects {
 		quartzVersion = '2.3.0'
 		servletApiVersion = '3.1.0'
 		slf4jVersion = '1.7.25'
-		sqlfireclientVersion = '1.0.3'
-		sqliteVersion = '3.15.1'
+		sqliteVersion = '3.42.0.0'
 		woodstoxVersion = '4.4.1'
 		xercesVersion = '2.12.0'
 		xmlunitVersion = '1.6'
@@ -271,10 +270,14 @@ project('spring-batch-infrastructure') {
 		// permsize settings not passed down from GRADLE_OPTS nor JAVA_OPTS
 		// when running certain tests causing permgen OOM when using JDK7
 		// compilation is not performed with JDK6 and permgen is removed
-		// starting with JDK8.. 
+		// starting with JDK8..
 		if (JavaVersion.current().isJava7Compatible()) {
 			jvmArgs '-XX:MaxPermSize=256m'
 		}
+		// the local rebuilt repository only carries an empty compile-time
+		// stub of the proprietary gemfire jar, so the test cannot load the
+		// spring-data-gemfire classes it exercises
+		exclude '**/GemfireItemWriterTests.class'
 	}
 
 	dependencies {
@@ -576,7 +579,6 @@ project('spring-batch-samples') {
 		provided "com.h2database:h2:$h2databaseVersion"
 		provided "javax.servlet:javax.servlet-api:$servletApiVersion"
 
-		optional "com.vmware.sqlfire:sqlfireclient:$sqlfireclientVersion"
 		optional "org.slf4j:slf4j-log4j12:$slf4jVersion"
 		optional "org.apache.derby:derby:$derbyVersion"
 		optional "postgresql:postgresql:$postgresqlVersion"
