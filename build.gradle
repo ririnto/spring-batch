@@ -10,8 +10,6 @@ buildscript {
 	dependencies {
 		classpath 'io.spring.gradle:docbook-reference-plugin:0.3.1'
 		classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
-		classpath 'io.spring.gradle:spring-io-plugin:0.0.5.RELEASE'
-		classpath "io.spring.gradle:dependency-management-plugin:0.5.1.RELEASE"
 	}
 }
 
@@ -211,24 +209,6 @@ configure(subprojects - project(":spring-build-src")) { subproject ->
 	}
 }
 
-configure(mainProjects) {
-	if (project.hasProperty('platformVersion')) {
-		apply plugin: 'spring-io'
-
-		repositories {
-			maven { url "https://repo.spring.io/libs-snapshot" }
-		}
-
-		dependencyManagement {
-			springIoTestRuntime {
-				imports {
-					mavenBom "io.spring.platform:platform-bom:${platformVersion}"
-				}
-			}
-		}
-	}
-}
-
 project("spring-build-src") {
 	description = "Exposes gradle buildSrc for IDE support"
 	apply plugin: "groovy"
@@ -280,6 +260,13 @@ project('spring-batch-core') {
 
 project('spring-batch-infrastructure') {
     description = 'Spring Batch Infrastructure'
+
+	// com.gemstone.gemfire:gemfire is not published to Maven Central and is only
+	// reachable through the defunct repo.spring.io; the local rebuilt repository
+	// provides 8.2.0 of the same 8.2.x line spring-data-gemfire compiles against
+	configurations.all {
+		resolutionStrategy.force 'com.gemstone.gemfire:gemfire:8.2.0'
+	}
 	test {
 		// permsize settings not passed down from GRADLE_OPTS nor JAVA_OPTS
 		// when running certain tests causing permgen OOM when using JDK7
@@ -345,7 +332,11 @@ project('spring-batch-infrastructure') {
 		optional "org.springframework:spring-tx:$springVersion"
 		optional "org.springframework.data:spring-data-commons:$springDataCommonsVersion"
 		optional "org.springframework.data:spring-data-mongodb:$springDataMongodbVersion"
-		optional "org.springframework.data:spring-data-neo4j:$springDataNeo4jVersion"
+		// neo4j-cypher-dsl was only published to the defunct m2.neo4j.org;
+		// batch builds its cypher queries as strings and never uses the DSL
+		optional ("org.springframework.data:spring-data-neo4j:$springDataNeo4jVersion") {
+			exclude group: 'org.neo4j', module: 'neo4j-cypher-dsl'
+		}
 		optional "org.springframework.data:spring-data-gemfire:$springDataGemfireVersion"
 		compile("org.codehaus.woodstox:woodstox-core-asl:$woodstoxVersion") { dep ->
 			optional dep
@@ -357,15 +348,6 @@ project('spring-batch-infrastructure') {
         optional "org.springframework.ldap:spring-ldap-core-tiger:$springLdapVersion"
         optional "org.springframework.ldap:spring-ldap-ldif-core:$springLdapVersion"
 	}
-
-	if (project.hasProperty('platformVersion')) {
-		def dataNeo4jVersion = dependencyManagement.springIoTestRuntime.managedVersions['org.springframework.data:spring-data-neo4j']
-		if (dataNeo4jVersion?.startsWith('4.')) {
-			tasks.withType(Test).matching { it.name =~ "springIoJdk.Test" }.all {
-				exclude '**/Neo4jItemReaderTests.class'
-			}
-		}
-	}
 }
 
 project('spring-batch-infrastructure-neo4j4') {
@@ -376,15 +358,6 @@ project('spring-batch-infrastructure-neo4j4') {
 		optional "org.springframework.data:spring-data-neo4j:$springDataNeo4j4Version"
 		testCompile "org.mockito:mockito-core:$mockitoVersion"
 		testCompile "junit:junit:${junitVersion}"
-	}
-
-	if (project.hasProperty('platformVersion')) {
-		def dataNeo4jVersion = dependencyManagement.springIoTestRuntime.managedVersions['org.springframework.data:spring-data-neo4j']
-		if (dataNeo4jVersion?.startsWith('3.')) {
-			tasks.withType(Test).matching { it.name =~ "springIoJdk.Test" }.all {
-				enabled false
-			}
-		}
 	}
 }
 

@@ -16,12 +16,14 @@ task generateSql {
 
 	outputs.dir generatedResourcesDir
 
-	ant.typedef(resource: 'foundrylogic/vpp/typedef.properties',
-							classpath: configurations.vpp.asPath)
-	ant.taskdef(resource: 'foundrylogic/vpp/taskdef.properties',
-							classpath: configurations.vpp.asPath)
-
 	doLast {
+		// resolve vpp lazily: the dependency is only available on repo.spring.io,
+		// which is no longer reachable, and the task is not part of the build lifecycle
+		ant.typedef(resource: 'foundrylogic/vpp/typedef.properties',
+								classpath: configurations.vpp.asPath)
+		ant.taskdef(resource: 'foundrylogic/vpp/taskdef.properties',
+								classpath: configurations.vpp.asPath)
+
 		['db2', 'derby', 'h2', 'hsqldb', 'mysql',
 		 'oracle10g', 'postgresql', 'sqlf', 'sqlserver', 'sybase'].each { dbType ->
 			ant.vppcopy(todir: generatedResourcesDir, overwrite: 'true') {
