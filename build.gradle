@@ -69,7 +69,7 @@ allprojects {
 		hsqldbVersion = '2.3.6'
 		ibatisVersion = '2.3.4.726'
 		jacksonVersion = '1.9.13'
-		jackson2Version = "2.8.11.3"
+		jackson2Version = "2.13.5"
 		javaMailVersion = '1.5.6'
 		javaxBatchApiVersion = '1.0.1'
 		javaxInjectVersion = '1'

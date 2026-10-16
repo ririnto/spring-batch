@@ -15,6 +15,7 @@
  */
 package org.springframework.batch.core.repository.dao;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.Test;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 
@@ -99,6 +100,7 @@ public abstract class AbstractExecutionContextSerializerTests {
 
     protected abstract ExecutionContextSerializer getSerializer();
 
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
     public static class ComplexObject implements Serializable {
         private static final long serialVersionUID = 1L;
         private String name;
