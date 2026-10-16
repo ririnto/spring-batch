@@ -74,7 +74,7 @@ allprojects {
 		javaxBatchApiVersion = '1.0.1'
 		javaxInjectVersion = '1'
 		jbatchTckSpi = '1.0'
-		jettisonVersion = '1.2'
+		jettisonVersion = '1.5.4'
 		jtdsVersion = '1.3.1'
 		junitVersion = '4.12'
 		log4jVersion = '1.2.17'
@@ -89,7 +89,7 @@ allprojects {
 		woodstoxVersion = '4.4.1'
 		xercesVersion = '2.12.0'
 		xmlunitVersion = '1.6'
-		xstreamVersion = '1.4.11.1'
+		xstreamVersion = '1.4.21'
 		jrubyVersion = '1.7.27'
 		beanshellVersion = '2.0b5'
 	}

@@ -73,6 +73,9 @@ public class XStreamExecutionContextStringSerializer implements ExecutionContext
 		else {
 			xstream = new XStream(reflectionProvider, hierarchicalStreamDriver);
 		}
+		// XStream 1.4.18+ denies every type by default; the stored execution
+		// contexts only ever contain batch domain types and default JDK types
+		xstream.allowTypesByRegExp(new String[] { "org\\.springframework\\.batch\\..*" });
 	}
 
 	/**
